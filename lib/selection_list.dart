@@ -3,6 +3,7 @@ import 'package:country_list_pick/support/code_country.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 import 'country_list_pick.dart';
 
@@ -44,6 +45,9 @@ class _SelectionListState extends State<SelectionList> {
   double _offsetContainer = 0.0;
 
   bool isShow = true;
+
+  var textColor = Colors.black;
+  var pickerColor = Colors.black;
 
   @override
   void initState() {
@@ -92,9 +96,36 @@ class _SelectionListState extends State<SelectionList> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: SingleChildScrollView(
+                                    child: BlockPicker(
+                                      pickerColor: textColor,
+                                      onColorChanged: changeColor,
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: const Text('Pick text color'),
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all<Color>(textColor),
+                              foregroundColor: MaterialStateProperty.all<Color>(
+                                useWhiteForeground(textColor)
+                                    ? const Color(0xffffffff)
+                                    : const Color(0xff000000),
+                              )),
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(15.0),
-                          child: Text(widget.theme?.searchText ?? 'SEARCH'),
+                          child: Text(widget.theme?.searchText ?? 'SEARCH',
+                              style: TextStyle(color: textColor)),
                         ),
                         Container(
                           color: Colors.white,
@@ -116,8 +147,8 @@ class _SelectionListState extends State<SelectionList> {
                         ),
                         Padding(
                           padding: const EdgeInsets.all(15.0),
-                          child:
-                              Text(widget.theme?.lastPickText ?? 'LAST PICK'),
+                          child: Text(widget.theme?.lastPickText ?? 'LAST PICK',
+                              style: TextStyle(color: textColor)),
                         ),
                         Container(
                           color: Colors.white,
@@ -306,4 +337,7 @@ class _SelectionListState extends State<SelectionList> {
             _controllerScroll!.position.minScrollExtent &&
         !_controllerScroll!.position.outOfRange) {}
   }
+
+  // ValueChanged<Color> callback
+  void changeColor(Color color) => setState(() => textColor = color);
 }
